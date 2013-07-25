@@ -2,15 +2,6 @@ package org.littleshoot.proxy;
 
 import static org.jboss.netty.channel.Channels.pipeline;
 
-import java.lang.management.ManagementFactory;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
@@ -25,8 +16,7 @@ import org.slf4j.LoggerFactory;
  * Factory for creating pipelines for incoming requests to our listening
  * socket.
  */
-public class HttpServerPipelineFactory implements ChannelPipelineFactory, 
-    AllConnectionData {
+public class HttpServerPipelineFactory implements ChannelPipelineFactory {
     
     private final Logger log = 
         LoggerFactory.getLogger(HttpServerPipelineFactory.class);
@@ -104,37 +94,9 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory,
         this.channelGroup = channelGroup;
         this.chainProxyManager = chainProxyManager;
         //this.ksm = ksm;
-        this.cacheManager = proxyCacheManager;
-        
-        if (LittleProxyConfig.isUseJmx()) {
-            setupJmx();
-        }
+        this.cacheManager = proxyCacheManager;        
     }
-    
-    private void setupJmx() {
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        try {
-            final Class<? extends AllConnectionData> clazz = getClass();
-            final String pack = clazz.getPackage().getName();
-            final String oName =
-                pack+":type="+clazz.getSimpleName()+"-"+clazz.getSimpleName() + 
-                hashCode();
-            log.debug("Registering MBean with name: {}", oName);
-            final ObjectName mxBeanName = new ObjectName(oName);
-            if (!mbs.isRegistered(mxBeanName)) {
-                mbs.registerMBean(this, mxBeanName);
-            }
-        } catch (final MalformedObjectNameException e) {
-            log.error("Could not set up JMX", e);
-        } catch (final InstanceAlreadyExistsException e) {
-            log.error("Could not set up JMX", e);
-        } catch (final MBeanRegistrationException e) {
-            log.error("Could not set up JMX", e);
-        } catch (final NotCompliantMBeanException e) {
-            log.error("Could not set up JMX", e);
-        }
-    }
-    
+
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         final ChannelPipeline pipeline = pipeline();
@@ -168,10 +130,5 @@ public class HttpServerPipelineFactory implements ChannelPipelineFactory,
         pipeline.addLast("handler", httpRequestHandler);
         this.numHandlers++;
         return pipeline;
-    }
-
-    @Override
-    public int getNumRequestHandlers() {
-        return this.numHandlers;
     }
 }

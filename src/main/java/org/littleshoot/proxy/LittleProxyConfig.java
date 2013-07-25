@@ -101,25 +101,6 @@ public class LittleProxyConfig {
         return useDnsSec;
     }
 
-    /**
-     * Whether or not to use JMX -- defaults to false.
-     *
-     * @param useJmx Whether or not to use JMX.
-     */
-    public static void setUseJmx(boolean useJmx) {
-        LittleProxyConfig.useJmx = useJmx;
-    }
-
-    /**
-     * Returns whether or not JMX is turned on.
-     *
-     * @return <code>true</code> if JMX is turned on, otherwise 
-     * <code>false</code>.
-     */
-    public static boolean isUseJmx() {
-        return useJmx;
-    }
-
     public static boolean isUseSSLMitm() {
         return useMITMInSSL;
     }
