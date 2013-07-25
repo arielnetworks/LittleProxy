@@ -1,56 +1,30 @@
-[![Build Status](https://travis-ci.org/adamfisk/LittleProxy.png?branch=master)](https://travis-ci.org/adamfisk/LittleProxy)
+LittleProxy for Android
 
-LittleProxy is a high performance HTTP proxy written in Java atop Trustin Lee's excellent Netty event-based networking library. It's quite stable, performs well, and is easy to integrate into your projects. 
+Please see [original readme](https://github.com/adamfisk/LittleProxy/blob/master/README.md)
 
-One option is to clone LittleProxy and run it from the command line. This is as simple as:
+# build
 
 ```
-$ git clone git://github.com/adamfisk/LittleProxy.git
+$ git clone git@github.com:arielnetworks/LittleProxy.git
 $ cd LittleProxy
-$ ./run.bash
+$ mvn package -DskipTests=true
 ```
 
-You can embed LittleProxy in your own projects through maven with the following:
+# run
 
 ```
-    <dependency>
-        <groupId>org.littleshoot</groupId>
-        <artifactId>littleproxy</artifactId>
-        <version>0.5.3</version>
-    </dependency>
+$ cp ${LittleProxy}/target/littleproxy-0.6.0-SNAPSHOT-littleproxy-shade.jar ${my_android_project}/libs/
 ```
 
-Once you've included LittleProxy, you can start the server with the following:
+```java
+new android.os.AsyncTask<Object, Object, Object>() {
+    @Override
+    protected Void doInBackground(Object... params) {
+        final org.littleshoot.proxy.HttpProxyServer server
+            = new org.littleshoot.proxy.DefaultHttpProxyServer(9999);
+        server.start();
+        return null;
+    }
+}.execute();
 
 ```
-final HttpProxyServer server = new DefaultHttpProxyServer(8080);
-server.start();
-```
-
-There are lots of filters and such you can also add to LittleProxy. You can add request and reponse filters, for example, as in:
-
-```
-final HttpProxyServer server = 
-    new DefaultHttpProxyServer(PROXY_PORT, new HttpRequestFilter() {
-        @Override
-        public void filter(HttpRequest httpRequest) {
-            System.out.println("Request went through proxy");
-        }
-    },
-    new HttpResponseFilters() {
-        @Override
-        public HttpFilter getFilter(String hostAndPort) {
-            return null;
-        }
-    });
-
-server.start();
-```
-
-If you have questions, please visit our Google Group here:
-
-https://groups.google.com/forum/#!forum/littleproxy
-
-The main LittleProxy page is here:
-
-http://www.littleshoot.org/littleproxy/
